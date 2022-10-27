@@ -1,5 +1,7 @@
+import AppComponent from "./components/AppComponent";
+
 function App() {
-  return <div className="App"></div>;
+  return <AppComponent />;
 }
 
 export default App;
