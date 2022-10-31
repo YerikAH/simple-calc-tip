@@ -58,23 +58,51 @@ export default function AppComponent() {
     },
   ];
 
+  // render buttons
+
   const [tipRender, setTipRender] = useState<tipPor[]>([]);
+
+  // bill state
+
   const [billState, setBillState] = useState<string>();
   const [theState, setTheState] = useState<string[]>([]);
 
+  // people state
+
   const [peopleState, setPeopleState] = useState<string>();
   const [theStatePeople, setTheStatePeople] = useState<string[]>([]);
+
+  // custom state
+
+  const [customState, setCustomState] = useState<string>();
+  const [theCustomState, setTheCustomState] = useState<string[]>([]);
+
+  // custom state or porcent state
+
+  const [porcent, setPorcent] = useState<string>("");
+
+  const handleBlur = () => {
+    calcSimpleTip();
+  };
   const handleClick = (id: number) => {
     let moreVar = resetStatusTip();
     const varTemp: tipPor[] = [...moreVar];
+    // find number select
     let varfind: tipPor | undefined = varTemp.find(
       (item) => item.numberSelect === id
     );
+
     if (varfind !== undefined) {
       varfind.active = !varfind.active;
+      // get the number select and make the operation
+      let numberSelectPorcent: string = `${varfind.numberSelect}`;
+      setPorcent(numberSelectPorcent);
     }
+
     setTipRender(varTemp);
+    calcSimpleTip();
   };
+  // bill state funcion only numbers input
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     let onlyNumbers: string[] = [
       "1",
@@ -89,7 +117,6 @@ export default function AppComponent() {
       "0",
       ".",
     ];
-    console.log(billState);
     if (onlyNumbers.includes(e.key)) {
       let stateTemp = [...theState, e.key];
       setTheState(stateTemp);
@@ -110,6 +137,7 @@ export default function AppComponent() {
       setBillState(stateConvert);
     }
   };
+  // people state funcion only numbers input
   const handleKeyTwo = (e: React.KeyboardEvent<HTMLInputElement>) => {
     let onlyNumbers: string[] = [
       "1",
@@ -124,7 +152,6 @@ export default function AppComponent() {
       "0",
       ".",
     ];
-    console.log(peopleState);
     if (onlyNumbers.includes(e.key)) {
       let stateTemp = [...theStatePeople, e.key];
       setTheStatePeople(stateTemp);
@@ -145,6 +172,98 @@ export default function AppComponent() {
       setPeopleState(stateConvert);
     }
   };
+  // custom state funcion only numbers input
+  const handleKeyThree = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    let onlyNumbers: string[] = [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "0",
+      ".",
+    ];
+    console.log(peopleState);
+    if (onlyNumbers.includes(e.key)) {
+      let stateTemp = [...theCustomState, e.key];
+      setTheCustomState(stateTemp);
+      let stateConvert: string = theCustomState.join("");
+      setCustomState(stateConvert);
+      setPorcent(stateConvert);
+    } else {
+      let stateConvert: string = theCustomState.join("");
+      setCustomState(stateConvert);
+      setPorcent(stateConvert);
+    }
+
+    if (e.key == "Backspace") {
+      let stateTemp = theCustomState.pop();
+      let otherTemp = [...theCustomState];
+      let filterVar = otherTemp.filter((item: string) => item !== stateTemp);
+      setTheCustomState(filterVar);
+
+      let stateConvert: string = theCustomState.join("");
+      setCustomState(stateConvert);
+      setPorcent(stateConvert);
+    }
+  };
+
+  //function operation
+  function calcSimpleTip() {
+    let billStateConvert: number;
+    let peopleStateConvert: number;
+    let porcentConvert: number;
+    console.log("bill-state ", billState);
+    console.log("people-state ", peopleState);
+    console.log("porcent ", porcent);
+
+    if (billState !== undefined && billState !== "0" && billState !== "") {
+      billStateConvert = parseFloat(billState);
+    } else if (billState == "0") {
+      billStateConvert = 1.0;
+    } else if (billState == "") {
+      billStateConvert = 1.0;
+    } else {
+      billStateConvert = 1.0;
+    }
+
+    if (
+      peopleState !== undefined &&
+      peopleState !== "0" &&
+      peopleState !== ""
+    ) {
+      peopleStateConvert = parseFloat(peopleState);
+    } else if (peopleState == "0") {
+      peopleStateConvert = 1.0;
+    } else if (peopleState == "") {
+      peopleStateConvert = 1.0;
+    } else {
+      peopleStateConvert = 1.0;
+    }
+
+    if (porcent !== undefined && porcent !== "0" && porcent !== "") {
+      porcentConvert = parseFloat(porcent);
+    } else if (porcent == "0") {
+      porcentConvert = 1.0;
+    } else if (porcent == "") {
+      porcentConvert = 1.0;
+    } else {
+      porcentConvert = 1.0;
+    }
+    console.log("bill-state C ", billStateConvert);
+    console.log("people-state C ", peopleStateConvert);
+    console.log("porcent C ", porcentConvert);
+    let calctip: number =
+      (billStateConvert * (porcentConvert / 100)) / peopleStateConvert;
+    let totalcalc: number = billStateConvert / peopleStateConvert + calctip;
+    console.log(calctip);
+    console.log(totalcalc);
+  }
+
   function resetStatusTip(): tipPor[] {
     const moreVar = [...tipRender];
     moreVar.map((item) => {
@@ -178,6 +297,7 @@ export default function AppComponent() {
                     type="text"
                     value={billState}
                     onKeyDown={(e) => handleKey(e)}
+                    onBlur={handleBlur}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -201,7 +321,13 @@ export default function AppComponent() {
                       )
                     )}
                   </>
-                  <PartTwoInput type="text" placeholder="Custom" />
+                  <PartTwoInput
+                    type="text"
+                    placeholder="Custom"
+                    value={customState}
+                    onKeyDown={(e) => handleKeyThree(e)}
+                    onBlur={handleBlur}
+                  />
                 </PartTwoDiv>
               </AppOnePartTwo>
 
@@ -213,6 +339,7 @@ export default function AppComponent() {
                     type="text"
                     value={peopleState}
                     onKeyDown={(e) => handleKeyTwo(e)}
+                    onBlur={handleBlur}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
