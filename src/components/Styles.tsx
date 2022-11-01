@@ -8,7 +8,7 @@ export const AppAll = styled.div`
 `;
 export const AppCenter = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
 `;
 
 export const AppComponentCenter = styled.div`
@@ -24,6 +24,10 @@ export const ContainerApp = styled.div`
   padding: 1.5rem;
   background: var(--white);
   border-radius: 1rem;
+  @media (min-width: 900px) {
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+  }
 `;
 
 export const ContainerAppOne = styled.div`

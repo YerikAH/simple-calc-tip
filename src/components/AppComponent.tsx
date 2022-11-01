@@ -35,6 +35,7 @@ export default function AppComponent() {
     numberSelect: number;
     active: boolean;
   };
+
   const initialState: tipPor[] = [
     {
       numberSelect: 5,
@@ -61,209 +62,88 @@ export default function AppComponent() {
   // render buttons
 
   const [tipRender, setTipRender] = useState<tipPor[]>([]);
-
-  // bill state
-
-  const [billState, setBillState] = useState<string>();
-  const [theState, setTheState] = useState<string[]>([]);
-
-  // people state
-
-  const [peopleState, setPeopleState] = useState<string>();
-  const [theStatePeople, setTheStatePeople] = useState<string[]>([]);
-
-  // custom state
-
-  const [customState, setCustomState] = useState<string>();
-  const [theCustomState, setTheCustomState] = useState<string[]>([]);
-
-  // custom state or porcent state
-
+  const [billState, setBillState] = useState<string>("");
+  const [peopleState, setPeopleState] = useState<string>("");
+  const [customState, setCustomState] = useState<string>("");
   const [porcent, setPorcent] = useState<string>("");
+  const [tipAmount, setTipAmount] = useState<string>("$00.00");
+  const [totalPerson, setTotalPerson] = useState<string>("$00.00");
 
-  const handleBlur = () => {
-    calcSimpleTip();
-  };
-  const handleClick = (id: number) => {
+  function handleClick(id: number) {
+    // reset ui
     let moreVar = resetStatusTip();
+    // select id
     const varTemp: tipPor[] = [...moreVar];
-    // find number select
     let varfind: tipPor | undefined = varTemp.find(
       (item) => item.numberSelect === id
     );
-
     if (varfind !== undefined) {
-      varfind.active = !varfind.active;
-      // get the number select and make the operation
       let numberSelectPorcent: string = `${varfind.numberSelect}`;
       setPorcent(numberSelectPorcent);
+      // change activate for ui
+      varfind.active = !varfind.active;
+      // select the number
+      setTipRender(varTemp);
     }
-
-    setTipRender(varTemp);
-    calcSimpleTip();
+  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    useStateUpdate: React.Dispatch<React.SetStateAction<string>>,
+    useStateUpdateOptional?: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    let inputChange = e.target.value;
+    useStateUpdate(inputChange);
+    if (useStateUpdateOptional !== undefined) {
+      useStateUpdateOptional(inputChange);
+      resetStatusTip();
+    }
   };
-  // bill state funcion only numbers input
-  const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    let onlyNumbers: string[] = [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "0",
-      ".",
-    ];
-    if (onlyNumbers.includes(e.key)) {
-      let stateTemp = [...theState, e.key];
-      setTheState(stateTemp);
-      let stateConvert: string = theState.join("");
-      setBillState(stateConvert);
+  function trunc(x: number, posiciones: number = 0): number {
+    let s: string = x.toString();
+    let decimalLength: number = s.indexOf(".") + 1;
+    let numStr: string = s.substr(0, decimalLength + posiciones);
+    return Number(numStr);
+  }
+
+  function validationInput(varToBeChecked: string): number {
+    if (varToBeChecked === "0") {
+      return 1.0;
     } else {
-      let stateConvert: string = theState.join("");
-      setBillState(stateConvert);
+      let verification = parseFloat(varToBeChecked);
+      if (isNaN(verification)) {
+        return 1.0;
+      } else {
+        return verification;
+      }
     }
-
-    if (e.key == "Backspace") {
-      let stateTemp = theState.pop();
-      let otherTemp = [...theState];
-      let filterVar = otherTemp.filter((item: string) => item !== stateTemp);
-      setTheState(filterVar);
-
-      let stateConvert: string = theState.join("");
-      setBillState(stateConvert);
-    }
-  };
-  // people state funcion only numbers input
-  const handleKeyTwo = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    let onlyNumbers: string[] = [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "0",
-      ".",
-    ];
-    if (onlyNumbers.includes(e.key)) {
-      let stateTemp = [...theStatePeople, e.key];
-      setTheStatePeople(stateTemp);
-      let stateConvert: string = theStatePeople.join("");
-      setPeopleState(stateConvert);
-    } else {
-      let stateConvert: string = theStatePeople.join("");
-      setPeopleState(stateConvert);
-    }
-
-    if (e.key == "Backspace") {
-      let stateTemp = theStatePeople.pop();
-      let otherTemp = [...theStatePeople];
-      let filterVar = otherTemp.filter((item: string) => item !== stateTemp);
-      setTheStatePeople(filterVar);
-
-      let stateConvert: string = theStatePeople.join("");
-      setPeopleState(stateConvert);
-    }
-  };
-  // custom state funcion only numbers input
-  const handleKeyThree = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    let onlyNumbers: string[] = [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "0",
-      ".",
-    ];
-    console.log(peopleState);
-    if (onlyNumbers.includes(e.key)) {
-      let stateTemp = [...theCustomState, e.key];
-      setTheCustomState(stateTemp);
-      let stateConvert: string = theCustomState.join("");
-      setCustomState(stateConvert);
-      setPorcent(stateConvert);
-    } else {
-      let stateConvert: string = theCustomState.join("");
-      setCustomState(stateConvert);
-      setPorcent(stateConvert);
-    }
-
-    if (e.key == "Backspace") {
-      let stateTemp = theCustomState.pop();
-      let otherTemp = [...theCustomState];
-      let filterVar = otherTemp.filter((item: string) => item !== stateTemp);
-      setTheCustomState(filterVar);
-
-      let stateConvert: string = theCustomState.join("");
-      setCustomState(stateConvert);
-      setPorcent(stateConvert);
-    }
-  };
-
-  //function operation
+  }
   function calcSimpleTip() {
     let billStateConvert: number;
     let peopleStateConvert: number;
     let porcentConvert: number;
-    console.log("bill-state ", billState);
-    console.log("people-state ", peopleState);
-    console.log("porcent ", porcent);
+    billStateConvert = validationInput(billState);
+    peopleStateConvert = validationInput(peopleState);
+    porcentConvert = validationInput(porcent);
+    console.log("\n");
+    console.log("\n");
+    console.log("\n");
+    console.log("bill state: ", billStateConvert);
+    console.log("people state: ", peopleStateConvert);
+    console.log("percent state: ", porcentConvert);
 
-    if (billState !== undefined && billState !== "0" && billState !== "") {
-      billStateConvert = parseFloat(billState);
-    } else if (billState == "0") {
-      billStateConvert = 1.0;
-    } else if (billState == "") {
-      billStateConvert = 1.0;
-    } else {
-      billStateConvert = 1.0;
-    }
-
-    if (
-      peopleState !== undefined &&
-      peopleState !== "0" &&
-      peopleState !== ""
-    ) {
-      peopleStateConvert = parseFloat(peopleState);
-    } else if (peopleState == "0") {
-      peopleStateConvert = 1.0;
-    } else if (peopleState == "") {
-      peopleStateConvert = 1.0;
-    } else {
-      peopleStateConvert = 1.0;
-    }
-
-    if (porcent !== undefined && porcent !== "0" && porcent !== "") {
-      porcentConvert = parseFloat(porcent);
-    } else if (porcent == "0") {
-      porcentConvert = 1.0;
-    } else if (porcent == "") {
-      porcentConvert = 1.0;
-    } else {
-      porcentConvert = 1.0;
-    }
-    console.log("bill-state C ", billStateConvert);
-    console.log("people-state C ", peopleStateConvert);
-    console.log("porcent C ", porcentConvert);
     let calctip: number =
       (billStateConvert * (porcentConvert / 100)) / peopleStateConvert;
     let totalcalc: number = billStateConvert / peopleStateConvert + calctip;
-    console.log(calctip);
-    console.log(totalcalc);
-  }
 
+    let tipAmountResult: string = `$${trunc(calctip, 2)}`;
+    let totalPersonResult: string = `$${trunc(totalcalc, 2)}`;
+
+    console.log("tip amount: ", calctip);
+    console.log("total person result: ", totalcalc);
+    setTipAmount(tipAmountResult);
+    setTotalPerson(totalPersonResult);
+    return true;
+  }
   function resetStatusTip(): tipPor[] {
     const moreVar = [...tipRender];
     moreVar.map((item) => {
@@ -274,7 +154,9 @@ export default function AppComponent() {
     setTipRender(moreVar);
     return moreVar;
   }
-
+  useEffect(() => {
+    calcSimpleTip();
+  }, [porcent]);
   useEffect(() => {
     setTipRender(initialState);
   }, []);
@@ -296,8 +178,8 @@ export default function AppComponent() {
                   <PartOneInput
                     type="text"
                     value={billState}
-                    onKeyDown={(e) => handleKey(e)}
-                    onBlur={handleBlur}
+                    onChange={(e) => handleChange(e, setBillState)}
+                    onBlur={calcSimpleTip}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -315,7 +197,10 @@ export default function AppComponent() {
                           {item.numberSelect}%
                         </PartTwoButton>
                       ) : (
-                        <PartTwoButtonActive key={item.numberSelect}>
+                        <PartTwoButtonActive
+                          key={item.numberSelect}
+                          onClick={() => handleClick(item.numberSelect)}
+                        >
                           {item.numberSelect}%
                         </PartTwoButtonActive>
                       )
@@ -325,8 +210,10 @@ export default function AppComponent() {
                     type="text"
                     placeholder="Custom"
                     value={customState}
-                    onKeyDown={(e) => handleKeyThree(e)}
-                    onBlur={handleBlur}
+                    onChange={(e) =>
+                      handleChange(e, setCustomState, setPorcent)
+                    }
+                    onBlur={calcSimpleTip}
                   />
                 </PartTwoDiv>
               </AppOnePartTwo>
@@ -338,8 +225,8 @@ export default function AppComponent() {
                   <PartOneInput
                     type="text"
                     value={peopleState}
-                    onKeyDown={(e) => handleKeyTwo(e)}
-                    onBlur={handleBlur}
+                    onChange={(e) => handleChange(e, setPeopleState)}
+                    onBlur={calcSimpleTip}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -352,7 +239,7 @@ export default function AppComponent() {
                     / person
                   </ATPartOneBoxOneDescription>
                 </ATPartOneBoxOne>
-                <ATPartOneBoxTwoPrice>$00.00</ATPartOneBoxTwoPrice>
+                <ATPartOneBoxTwoPrice>{tipAmount}</ATPartOneBoxTwoPrice>
               </AppTwoPartOne>
               <AppTwoPartOne>
                 <ATPartOneBoxOne>
@@ -361,7 +248,7 @@ export default function AppComponent() {
                     / person
                   </ATPartOneBoxOneDescription>
                 </ATPartOneBoxOne>
-                <ATPartOneBoxTwoPrice>$00.00</ATPartOneBoxTwoPrice>
+                <ATPartOneBoxTwoPrice>{totalPerson}</ATPartOneBoxTwoPrice>
               </AppTwoPartOne>
               <AppTwoPartEnd>RESET</AppTwoPartEnd>
             </ContainerAppTwo>
