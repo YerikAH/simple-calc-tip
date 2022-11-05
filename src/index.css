@@ -9,6 +9,7 @@
   --very-light-grayish-cyan: hsl(189, 41%, 97%);
   --red: #b47b6d;
   --white: hsl(0, 0%, 100%);
+  --hover: #9fe8dd;
   --type: "Space Mono", "sans-serif";
 }
 *,

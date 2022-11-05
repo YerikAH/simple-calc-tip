@@ -103,6 +103,11 @@ export const PartTwoButton = styled.button`
   color: var(--white);
   border-radius: 0.2rem;
   padding: 0.4rem;
+  transition: 0.3s;
+  &:hover {
+    background-color: var(--hover);
+    color: var(--very-dark-cyan);
+  }
 `;
 export const PartTwoButtonActive = styled.button`
   width: 100%;
@@ -175,9 +180,13 @@ export const AppTwoPartEnd = styled.button`
   padding: 0.8rem;
   border-radius: 0.3rem;
   font-size: 1rem;
+  transition: 0.3s;
   @media (min-width: 900px) {
     margin-bottom: 1rem;
     font-size: 1.25rem;
+  }
+  &:hover {
+    background-color: var(--hover);
   }
 `;
 export const SeparateDiv = styled.div``;
