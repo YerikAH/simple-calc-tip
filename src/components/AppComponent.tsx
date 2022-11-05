@@ -40,6 +40,7 @@ export default function AppComponent() {
   type styleErr = {
     border: string;
   };
+
   const initialState: tipPor[] = [
     {
       numberSelect: 5,
@@ -112,7 +113,31 @@ export default function AppComponent() {
       setTipRender(varTemp);
     }
   }
-
+  function handleBlur(
+    setBorder: React.Dispatch<React.SetStateAction<styleErr | undefined>>,
+    err: boolean
+  ) {
+    calcSimpleTip();
+    let borderTy: styleErr;
+    if (err) {
+      borderTy = {
+        border: "3px solid var(--red)",
+      };
+    } else {
+      borderTy = {
+        border: "none",
+      };
+    }
+    setBorder(borderTy);
+  }
+  function handleClickBorder(
+    setBorder: React.Dispatch<React.SetStateAction<styleErr | undefined>>
+  ) {
+    let borderTy: styleErr = {
+      border: "3px solid var(--strong-cyan)",
+    };
+    setBorder(borderTy);
+  }
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement>,
     useStateUpdate: React.Dispatch<React.SetStateAction<string>>,
@@ -218,7 +243,7 @@ export default function AppComponent() {
   useEffect(() => {
     if (erroBill) {
       let borderTy: styleErr = {
-        border: "2px solid var(--red)",
+        border: "3px solid var(--red)",
       };
       setStyleErrBill(borderTy);
     } else {
@@ -232,7 +257,7 @@ export default function AppComponent() {
   useEffect(() => {
     if (erroPeople) {
       let borderTy: styleErr = {
-        border: "2px solid var(--red)",
+        border: "3px solid var(--red)",
       };
       setStyleErrPeople(borderTy);
     } else {
@@ -246,7 +271,7 @@ export default function AppComponent() {
   useEffect(() => {
     if (erroCustom) {
       let borderTy: styleErr = {
-        border: "2px solid var(--red)",
+        border: "3px solid var(--red)",
       };
       setStyleErrCustom(borderTy);
     } else {
@@ -278,7 +303,8 @@ export default function AppComponent() {
                     placeholder="0"
                     value={billState}
                     onChange={(e) => handleChange(e, setBillState)}
-                    onBlur={calcSimpleTip}
+                    onBlur={(e) => handleBlur(setStyleErrBill, erroBill)}
+                    onClick={(e) => handleClickBorder(setStyleErrBill)}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -313,7 +339,8 @@ export default function AppComponent() {
                     onChange={(e) =>
                       handleChange(e, setCustomState, setPorcent)
                     }
-                    onBlur={calcSimpleTip}
+                    onBlur={(e) => handleBlur(setStyleErrCustom, erroCustom)}
+                    onClick={(e) => handleClickBorder(setStyleErrCustom)}
                     style={styleErrCustom}
                   />
                 </PartTwoDiv>
@@ -330,7 +357,8 @@ export default function AppComponent() {
                     placeholder="0"
                     value={peopleState}
                     onChange={(e) => handleChange(e, setPeopleState)}
-                    onBlur={calcSimpleTip}
+                    onBlur={(e) => handleBlur(setStyleErrPeople, erroPeople)}
+                    onClick={(e) => handleClickBorder(setStyleErrPeople)}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
