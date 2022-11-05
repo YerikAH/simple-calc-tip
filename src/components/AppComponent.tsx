@@ -365,7 +365,9 @@ export default function AppComponent() {
             </ContainerAppOne>
             <ContainerAppTwo>
               <SeparateDiv>
-                <AppTwoPartOne special="true">
+                {/* This is funny */}
+                <AppTwoPartOne className="true">
+                  {/* error */}
                   <ATPartOneBoxOne>
                     <ATPartOneBoxOneTitle>Tip Amount</ATPartOneBoxOneTitle>
                     <ATPartOneBoxOneDescription>

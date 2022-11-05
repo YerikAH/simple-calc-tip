@@ -146,7 +146,7 @@ export const ContainerAppTwo = styled.div`
 export const AppTwoPartOne = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: ${(props) => props.special && "1.5rem"};
+  margin-bottom: ${(props) => props.className === "true" && "1.5rem"};
 `;
 export const ATPartOneBoxOne = styled.div`
   display: flex;
