@@ -13,7 +13,7 @@ This is a solution to the simple calc tip solution. The challenge is from [Front
 
 ## What I learned
 
---description
+And I finished another challenge, this one cost me a bit, but I was able to develop it successfully, I developed it with TypeScript, by the way for now I am studying TypeScript and doing projects, so the code may not be very clean. , anyway, if you have any feedback to improve this skill, it would be greatly appreciated.
 
 - React
 - TypeScript
@@ -21,4 +21,4 @@ This is a solution to the simple calc tip solution. The challenge is from [Front
 - styled-components
 
 ## Demo
-url
+https://yerikah.github.io/simple-calc-tip/
