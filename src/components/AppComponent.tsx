@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.svg";
 import dollar from "../assets/icon-dollar.svg";
 import person from "../assets/icon-person.svg";
+import { TipPor, StyleErr } from "./model/types";
+import { trunc, formulaTip, formulaTotal } from "../helpers/functions";
+import { noIsNumber, IsZero } from "../helpers/messages";
 import {
   AppComponentCenter,
   AppComponentLogoLogo,
@@ -32,80 +35,70 @@ import {
   SpanError,
 } from "./Styles";
 
+// not error
+const notError: StyleErr = {
+  border: "none",
+};
+// buttons render
+const initialState: TipPor[] = [
+  {
+    numberSelect: 5,
+    active: false,
+  },
+  {
+    numberSelect: 10,
+    active: false,
+  },
+  {
+    numberSelect: 15,
+    active: false,
+  },
+  {
+    numberSelect: 25,
+    active: false,
+  },
+  {
+    numberSelect: 50,
+    active: false,
+  },
+];
+
 export default function AppComponent() {
-  type tipPor = {
-    numberSelect: number;
-    active: boolean;
-  };
-  type styleErr = {
-    border: string;
-  };
-
-  const initialState: tipPor[] = [
-    {
-      numberSelect: 5,
-      active: false,
-    },
-    {
-      numberSelect: 10,
-      active: false,
-    },
-    {
-      numberSelect: 15,
-      active: false,
-    },
-    {
-      numberSelect: 25,
-      active: false,
-    },
-    {
-      numberSelect: 50,
-      active: false,
-    },
-  ];
-
   // render buttons
 
-  const [tipRender, setTipRender] = useState<tipPor[]>([]);
-  const [billState, setBillState] = useState<string>("");
-  const [peopleState, setPeopleState] = useState<string>("");
-  const [customState, setCustomState] = useState<string>("");
-  const [porcent, setPorcent] = useState<string>("");
+  const [tipRender, setTipRender] = useState<TipPor[]>([]);
+  const [billState, setBillState] = useState("");
+  const [peopleState, setPeopleState] = useState("");
+  const [customState, setCustomState] = useState("");
+  const [porcent, setPorcent] = useState("");
   const [tipAmount, setTipAmount] = useState<string>("$00.00");
   const [totalPerson, setTotalPerson] = useState<string>("$00.00");
 
   // state for error
   //bill
-  const [erroBill, setErroBill] = useState<boolean>(false);
-  const [errMessBill, setErrMessBill] = useState<string>("");
-  const [styleErrBill, setStyleErrBill] = useState<styleErr>();
+  const [erroBill, setErroBill] = useState(false);
+  const [errMessBill, setErrMessBill] = useState("");
+  const [styleErrBill, setStyleErrBill] = useState<StyleErr>(notError);
   // people
-  const [erroPeople, setErroPeople] = useState<boolean>(false);
-  const [errMessPeople, setErrMessPeople] = useState<string>("");
-  const [styleErrPeople, setStyleErrPeople] = useState<styleErr>();
+  const [erroPeople, setErroPeople] = useState(false);
+  const [errMessPeople, setErrMessPeople] = useState("");
+  const [styleErrPeople, setStyleErrPeople] = useState<StyleErr>(notError);
 
   // custom
-  const [erroCustom, setErroCustom] = useState<boolean>(false);
-  const [errMessCustom, setErrMessCustom] = useState<string>("");
-  const [styleErrCustom, setStyleErrCustom] = useState<styleErr>();
-
-  function trunc(x: number, posiciones: number = 0): number {
-    let s: string = x.toString();
-    let decimalLength: number = s.indexOf(".") + 1;
-    let numStr: string = s.substr(0, decimalLength + posiciones);
-    return Number(numStr);
-  }
+  const [erroCustom, setErroCustom] = useState(false);
+  const [errMessCustom, setErrMessCustom] = useState("");
+  const [styleErrCustom, setStyleErrCustom] = useState<StyleErr>(notError);
 
   function handleClick(id: number) {
     // reset ui
-    let moreVar: tipPor[] = resetStatusTip();
+    const moreVar: TipPor[] = resetStatusTip();
     // select id
-    const varTemp: tipPor[] = [...moreVar];
-    let varfind: tipPor | undefined = varTemp.find(
+    const varTemp: TipPor[] = [...moreVar];
+    const varfind: TipPor | undefined = varTemp.find(
       (item) => item.numberSelect === id
     );
     if (varfind !== undefined) {
-      let numberSelectPorcent: string = `${varfind.numberSelect}`;
+      const numberSelectPorcent: string = `${varfind.numberSelect}`;
       setPorcent(numberSelectPorcent);
       // change activate for ui
       varfind.active = !varfind.active;
@@ -114,11 +107,10 @@ export default function AppComponent() {
     }
   }
   function handleBlur(
-    setBorder: React.Dispatch<React.SetStateAction<styleErr | undefined>>,
+    setBorder: React.Dispatch<React.SetStateAction<StyleErr>>,
     err: boolean
   ) {
-    calcSimpleTip();
-    let borderTy: styleErr;
+    let borderTy: StyleErr;
     if (err) {
       borderTy = {
         border: "3px solid var(--red)",
@@ -131,9 +123,9 @@ export default function AppComponent() {
     setBorder(borderTy);
   }
   function handleClickBorder(
-    setBorder: React.Dispatch<React.SetStateAction<styleErr | undefined>>
+    setBorder: React.Dispatch<React.SetStateAction<StyleErr>>
   ) {
-    let borderTy: styleErr = {
+    let borderTy: StyleErr = {
       border: "3px solid var(--strong-cyan)",
     };
     setBorder(borderTy);
@@ -142,7 +134,7 @@ export default function AppComponent() {
     e: React.ChangeEvent<HTMLInputElement>,
     useStateUpdate: React.Dispatch<React.SetStateAction<string>>,
     useStateUpdateOptional?: React.Dispatch<React.SetStateAction<string>>
-  ): void {
+  ) {
     let inputChange: string = e.target.value;
     useStateUpdate(inputChange);
     if (useStateUpdateOptional !== undefined) {
@@ -156,54 +148,62 @@ export default function AppComponent() {
     useBoolean: React.Dispatch<React.SetStateAction<boolean>>,
     useMessage: React.Dispatch<React.SetStateAction<string>>
   ): number {
+    // If the user sent a value of 0 = there mistake
     if (varToBeChecked === "0") {
-      if (useBoolean !== undefined && useMessage !== undefined) {
-        useBoolean(true);
-        useMessage("Can't be zero");
-      }
+      useBoolean(true);
+      useMessage(IsZero);
       return 1.0;
     } else {
-      let verification = parseFloat(varToBeChecked);
+      const verification = parseFloat(varToBeChecked);
+      // If the user did not send a number = there mistake
       if (isNaN(verification)) {
-        if (useBoolean !== undefined && useMessage !== undefined) {
-          useBoolean(true);
-          useMessage("You must enter numbers");
-        }
+        useBoolean(true);
+        useMessage(noIsNumber);
         return 1.0;
       } else {
-        if (useBoolean !== undefined) {
-          useBoolean(false);
-        }
+        // If the user sent a number = there is no mistake
+        useBoolean(false);
         return verification;
       }
     }
   }
-  function calcSimpleTip(): void {
-    let billStateConvert: number;
-    let peopleStateConvert: number;
-    let porcentConvert: number;
-    billStateConvert = validationInput(billState, setErroBill, setErrMessBill);
-    peopleStateConvert = validationInput(
+  function calcSimpleTip() {
+    const billStateConvert = validationInput(
+      billState,
+      setErroBill,
+      setErrMessBill
+    );
+    const peopleStateConvert = validationInput(
       peopleState,
       setErroPeople,
       setErrMessPeople
     );
-    porcentConvert = validationInput(porcent, setErroCustom, setErrMessCustom);
 
-    let calctip: number =
-      (billStateConvert * (porcentConvert / 100)) / peopleStateConvert;
-    let totalcalc: number = billStateConvert / peopleStateConvert + calctip;
+    const porcentConvert = validationInput(
+      porcent,
+      setErroCustom,
+      setErrMessCustom
+    );
 
-    let tipAmountResult: string = `$${trunc(calctip, 2)}`;
-    let totalPersonResult: string = `$${trunc(totalcalc, 2)}`;
+    const calctip = formulaTip(
+      billStateConvert,
+      porcentConvert,
+      peopleStateConvert
+    );
+    const totalcalc = formulaTotal(
+      billStateConvert,
+      peopleStateConvert,
+      calctip
+    );
 
-    console.log("tip amount: ", calctip);
-    console.log("total person result: ", totalcalc);
+    const tipAmountResult: string = `$${trunc(calctip, 2)}`;
+    const totalPersonResult: string = `$${trunc(totalcalc, 2)}`;
+
     setTipAmount(tipAmountResult);
     setTotalPerson(totalPersonResult);
   }
 
-  function resetStatusTip(): tipPor[] {
+  function resetStatusTip() {
     const moreVar = [...tipRender];
     moreVar.map((item) => {
       if (item.active) {
@@ -214,7 +214,7 @@ export default function AppComponent() {
     return moreVar;
   }
 
-  function handleReset(): void {
+  function handleReset() {
     setBillState("");
     setPeopleState("");
     setCustomState("");
@@ -223,11 +223,19 @@ export default function AppComponent() {
     setTotalPerson("$0.00");
     resetStatusTip();
   }
-  // calc calcSimpleTip when porcent is change
+  // run calcSimpleTip when percent input or people input or bill input
 
   useEffect(() => {
     calcSimpleTip();
   }, [porcent]);
+
+  useEffect(() => {
+    calcSimpleTip();
+  }, [peopleState]);
+
+  useEffect(() => {
+    calcSimpleTip();
+  }, [billState]);
 
   useEffect(() => {
     // render buttons percent
@@ -242,12 +250,12 @@ export default function AppComponent() {
 
   useEffect(() => {
     if (erroBill) {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "3px solid var(--red)",
       };
       setStyleErrBill(borderTy);
     } else {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "none",
       };
       setStyleErrBill(borderTy);
@@ -256,12 +264,12 @@ export default function AppComponent() {
 
   useEffect(() => {
     if (erroPeople) {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "3px solid var(--red)",
       };
       setStyleErrPeople(borderTy);
     } else {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "none",
       };
       setStyleErrPeople(borderTy);
@@ -270,12 +278,12 @@ export default function AppComponent() {
 
   useEffect(() => {
     if (erroCustom) {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "3px solid var(--red)",
       };
       setStyleErrCustom(borderTy);
     } else {
-      let borderTy: styleErr = {
+      let borderTy: StyleErr = {
         border: "none",
       };
       setStyleErrCustom(borderTy);
