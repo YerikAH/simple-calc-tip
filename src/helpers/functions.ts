@@ -20,3 +20,4 @@ export function formulaTotal(
   let resultTotal = bill / people + tip;
   return resultTotal;
 }
+

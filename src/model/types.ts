@@ -5,3 +5,9 @@ export type TipPor = {
 export type StyleErr = {
   border: string;
 };
+
+export type PropsResult = {
+  tipAmount: string;
+  totalPerson: string;
+  handleReset: () => void;
+};

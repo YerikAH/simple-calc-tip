@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.svg";
 import dollar from "../assets/icon-dollar.svg";
 import person from "../assets/icon-person.svg";
-import { TipPor, StyleErr } from "./model/types";
+import ResultComponent from "./ResultComponent";
+import { TipPor, StyleErr } from "../model/types";
 import { trunc, formulaTip, formulaTotal } from "../helpers/functions";
 import { noIsNumber, IsZero } from "../helpers/messages";
 import {
@@ -22,18 +23,11 @@ import {
   AppOnePartTwo,
   PartTwoInput,
   ContainerAppTwo,
-  AppTwoPartOne,
-  ATPartOneBoxOne,
-  ATPartOneBoxOneTitle,
-  ATPartOneBoxOneDescription,
-  ATPartOneBoxTwoPrice,
-  AppTwoPartEnd,
   AppAll,
   AppCenter,
   PartTwoButtonActive,
-  SeparateDiv,
   SpanError,
-} from "./Styles";
+} from "../styles/app-style";
 
 // not error
 const notError: StyleErr = {
@@ -222,6 +216,9 @@ export default function AppComponent() {
     setTipAmount("$0.00");
     setTotalPerson("$0.00");
     resetStatusTip();
+    setErroBill(false);
+    setErroCustom(false);
+    setErroPeople(false);
   }
   // run calcSimpleTip when percent input or people input or bill input
 
@@ -307,12 +304,11 @@ export default function AppComponent() {
                 <PartOneDiv style={styleErrBill}>
                   <PartOneImg src={dollar} alt="dolar" />
                   <PartOneInput
-                    type="text"
                     placeholder="0"
                     value={billState}
                     onChange={(e) => handleChange(e, setBillState)}
-                    onBlur={(e) => handleBlur(setStyleErrBill, erroBill)}
-                    onClick={(e) => handleClickBorder(setStyleErrBill)}
+                    onBlur={() => handleBlur(setStyleErrBill, erroBill)}
+                    onClick={() => handleClickBorder(setStyleErrBill)}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -341,14 +337,13 @@ export default function AppComponent() {
                     )}
                   </>
                   <PartTwoInput
-                    type="text"
                     placeholder="Custom"
                     value={customState}
                     onChange={(e) =>
                       handleChange(e, setCustomState, setPorcent)
                     }
-                    onBlur={(e) => handleBlur(setStyleErrCustom, erroCustom)}
-                    onClick={(e) => handleClickBorder(setStyleErrCustom)}
+                    onBlur={() => handleBlur(setStyleErrCustom, erroCustom)}
+                    onClick={() => handleClickBorder(setStyleErrCustom)}
                     style={styleErrCustom}
                   />
                 </PartTwoDiv>
@@ -361,40 +356,21 @@ export default function AppComponent() {
                 <PartOneDiv style={styleErrPeople}>
                   <PartOneImg src={person} alt="person" />
                   <PartOneInput
-                    type="text"
                     placeholder="0"
                     value={peopleState}
                     onChange={(e) => handleChange(e, setPeopleState)}
-                    onBlur={(e) => handleBlur(setStyleErrPeople, erroPeople)}
-                    onClick={(e) => handleClickBorder(setStyleErrPeople)}
+                    onBlur={() => handleBlur(setStyleErrPeople, erroPeople)}
+                    onClick={() => handleClickBorder(setStyleErrPeople)}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
             </ContainerAppOne>
             <ContainerAppTwo>
-              <SeparateDiv>
-                {/* This is funny */}
-                <AppTwoPartOne className="true">
-                  {/* error */}
-                  <ATPartOneBoxOne>
-                    <ATPartOneBoxOneTitle>Tip Amount</ATPartOneBoxOneTitle>
-                    <ATPartOneBoxOneDescription>
-                      / person
-                    </ATPartOneBoxOneDescription>
-                  </ATPartOneBoxOne>
-                  <ATPartOneBoxTwoPrice>{tipAmount}</ATPartOneBoxTwoPrice>
-                </AppTwoPartOne>
-                <AppTwoPartOne>
-                  <ATPartOneBoxOne>
-                    <ATPartOneBoxOneTitle>Total</ATPartOneBoxOneTitle>
-                    <ATPartOneBoxOneDescription>
-                      / person
-                    </ATPartOneBoxOneDescription>
-                  </ATPartOneBoxOne>
-                  <ATPartOneBoxTwoPrice>{totalPerson}</ATPartOneBoxTwoPrice>
-                </AppTwoPartOne>
-              </SeparateDiv>
-              <AppTwoPartEnd onClick={handleReset}>RESET</AppTwoPartEnd>
+              <ResultComponent
+                tipAmount={tipAmount}
+                totalPerson={totalPerson}
+                handleReset={handleReset}
+              ></ResultComponent>
             </ContainerAppTwo>
           </ContainerApp>
         </AppCenter>
