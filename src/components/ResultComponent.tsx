@@ -18,9 +18,7 @@ export default function ResultComponent({
   return (
     <>
       <SeparateDiv>
-        {/* This is funny */}
         <AppTwoPartOne className="true">
-          {/* error */}
           <ATPartOneBoxOne>
             <ATPartOneBoxOneTitle>Tip Amount</ATPartOneBoxOneTitle>
             <ATPartOneBoxOneDescription>/ person</ATPartOneBoxOneDescription>

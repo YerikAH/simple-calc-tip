@@ -117,12 +117,20 @@ export default function AppComponent() {
     setBorder(borderTy);
   }
   function handleClickBorder(
-    setBorder: React.Dispatch<React.SetStateAction<StyleErr>>
+    setBorder: React.Dispatch<React.SetStateAction<StyleErr>>,
+    err: boolean
   ) {
-    let borderTy: StyleErr = {
-      border: "3px solid var(--strong-cyan)",
-    };
-    setBorder(borderTy);
+    if (err) {
+      let borderTy: StyleErr = {
+        border: "3px solid var(--red)",
+      };
+      setBorder(borderTy);
+    } else {
+      let borderTy: StyleErr = {
+        border: "3px solid var(--strong-cyan)",
+      };
+      setBorder(borderTy);
+    }
   }
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -140,22 +148,30 @@ export default function AppComponent() {
   function validationInput(
     varToBeChecked: string,
     useBoolean: React.Dispatch<React.SetStateAction<boolean>>,
-    useMessage: React.Dispatch<React.SetStateAction<string>>
+    useMessage: React.Dispatch<React.SetStateAction<string>>,
+    moneyorpeople: boolean
   ): number {
     // If the user sent a value of 0 = there mistake
-    if (varToBeChecked === "0") {
+    const noEpace = varToBeChecked.trim();
+    if (noEpace === "0") {
       useBoolean(true);
       useMessage(IsZero);
       return 1.0;
     } else {
-      const verification = parseFloat(varToBeChecked);
       // If the user did not send a number = there mistake
-      if (isNaN(verification)) {
+      let regexOnlyNumber: RegExp;
+      if (moneyorpeople) {
+        regexOnlyNumber = /^[0-9]+$/;
+      } else {
+        regexOnlyNumber = /^[0-9]+([.][0-9]+)?$/;
+      }
+      if (!regexOnlyNumber.test(noEpace.trim())) {
         useBoolean(true);
         useMessage(noIsNumber);
         return 1.0;
       } else {
         // If the user sent a number = there is no mistake
+        const verification = parseFloat(noEpace);
         useBoolean(false);
         return verification;
       }
@@ -165,18 +181,21 @@ export default function AppComponent() {
     const billStateConvert = validationInput(
       billState,
       setErroBill,
-      setErrMessBill
+      setErrMessBill,
+      false
     );
     const peopleStateConvert = validationInput(
       peopleState,
       setErroPeople,
-      setErrMessPeople
+      setErrMessPeople,
+      true
     );
 
     const porcentConvert = validationInput(
       porcent,
       setErroCustom,
-      setErrMessCustom
+      setErrMessCustom,
+      false
     );
 
     const calctip = formulaTip(
@@ -227,11 +246,17 @@ export default function AppComponent() {
   }, [porcent]);
 
   useEffect(() => {
+    handleClickBorder(setStyleErrCustom, erroCustom);
+  }, [customState]);
+
+  useEffect(() => {
     calcSimpleTip();
+    handleClickBorder(setStyleErrPeople, erroPeople);
   }, [peopleState]);
 
   useEffect(() => {
     calcSimpleTip();
+    handleClickBorder(setStyleErrBill, erroBill);
   }, [billState]);
 
   useEffect(() => {
@@ -308,7 +333,7 @@ export default function AppComponent() {
                     value={billState}
                     onChange={(e) => handleChange(e, setBillState)}
                     onBlur={() => handleBlur(setStyleErrBill, erroBill)}
-                    onClick={() => handleClickBorder(setStyleErrBill)}
+                    onClick={() => handleClickBorder(setStyleErrBill, erroBill)}
                   />
                 </PartOneDiv>
               </AppOnePartOne>
@@ -343,7 +368,9 @@ export default function AppComponent() {
                       handleChange(e, setCustomState, setPorcent)
                     }
                     onBlur={() => handleBlur(setStyleErrCustom, erroCustom)}
-                    onClick={() => handleClickBorder(setStyleErrCustom)}
+                    onClick={() =>
+                      handleClickBorder(setStyleErrCustom, erroCustom)
+                    }
                     style={styleErrCustom}
                   />
                 </PartTwoDiv>
@@ -360,7 +387,9 @@ export default function AppComponent() {
                     value={peopleState}
                     onChange={(e) => handleChange(e, setPeopleState)}
                     onBlur={() => handleBlur(setStyleErrPeople, erroPeople)}
-                    onClick={() => handleClickBorder(setStyleErrPeople)}
+                    onClick={() =>
+                      handleClickBorder(setStyleErrPeople, erroPeople)
+                    }
                   />
                 </PartOneDiv>
               </AppOnePartOne>
