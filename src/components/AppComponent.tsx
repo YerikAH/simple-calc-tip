@@ -231,13 +231,13 @@ export default function AppComponent() {
     setBillState("");
     setPeopleState("");
     setCustomState("");
-    // setPorcent(""); by the effect, no affect in nothing, state for operation
+    setPorcent(""); //by the effect, no affect in nothing, state for operation
     setTipAmount("$0.00");
     setTotalPerson("$0.00");
     resetStatusTip();
-    setErroBill(false);
-    setErroCustom(false);
-    setErroPeople(false);
+    // setErroBill(false);
+    // setErroCustom(false);
+    // setErroPeople(false);
   }
   // run calcSimpleTip when percent input or people input or bill input
 
